@@ -26,6 +26,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  List<String> todo = ["Task1", "Task2", "Task3", "Task4", "Task5"];
   void createTodo() {
     showModalBottomSheet(
         isScrollControlled: true,
@@ -92,7 +93,24 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-      body: Text("Hello"),
+      body: Container(
+        padding: EdgeInsets.all(8),
+        child: ListView.builder(
+          itemCount: todo.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: ListTile(
+                contentPadding: EdgeInsets.all(10),
+                title: Text(
+                  todo[index],
+                  style: TextStyle(fontSize: 18),
+                ),
+                trailing: Icon(Icons.edit),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
