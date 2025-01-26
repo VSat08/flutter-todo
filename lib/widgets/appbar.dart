@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  void Function() createTodo;
-  MyAppBar({super.key, required this.createTodo});
+  final void Function() createTodo;
+  const MyAppBar({super.key, required this.createTodo});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(
-        "ToDo App",
+        "Todo",
         style: TextStyle(fontSize: 40),
       ),
       actions: [

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Body extends StatefulWidget {
-  List<String> todo;
-  void Function() updateLocalData;
-  Body({super.key, required this.todo, required this.updateLocalData});
+  final List<String> todo;
+  final void Function() updateLocalData;
+  const Body({super.key, required this.todo, required this.updateLocalData});
 
   @override
   State<Body> createState() => _BodyState();
