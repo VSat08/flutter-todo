@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todoapp/widgets/appbar.dart';
+import 'package:todoapp/widgets/body.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,7 +29,37 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List<String> todo = ["Task1", "Task2", "Task3", "Task4", "Task5"];
+  List<String> todo = [];
+  TextEditingController todoTitle = TextEditingController();
+
+  void addTodo({required String todoTitle}) {
+    if (todo.contains(todoTitle)) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Already Exists"),
+              content: Text("This goal is already added!"),
+              actions: [
+                InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Okay"))
+              ],
+            );
+          });
+      return;
+    }
+    setState(() {
+      todo.insert(0, todoTitle);
+    });
+
+    // print(todoTitle.text);
+    updateLocalData();
+    Navigator.pop(context);
+  }
+
   void createTodo() {
     showModalBottomSheet(
         isScrollControlled: true,
@@ -45,9 +78,22 @@ class _MainScreenState extends State<MainScreen> {
                     "Add Task",
                     style: TextStyle(fontSize: 20),
                   ),
-                  TextField(),
+                  TextField(
+                    decoration: InputDecoration(
+                      // icon: Icon(Icons.golf_course_sharp),
+                      contentPadding: EdgeInsets.all(10),
+                      hintText: "What's your next task?",
+                    ),
+                    autofocus: true,
+                    controller: todoTitle,
+                  ),
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        if (todoTitle.text.isNotEmpty) {
+                          addTodo(todoTitle: todoTitle.text);
+                        }
+                        todoTitle.text = "";
+                      },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orangeAccent,
                           foregroundColor: Colors.black,
@@ -63,54 +109,38 @@ class _MainScreenState extends State<MainScreen> {
         });
   }
 
+  void updateLocalData() async {
+    // Obtain shared preferences.
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+// Save an double value to 'decimal' key.
+    await prefs.setStringList('todoList', todo);
+  }
+
+  void loadLocalData() async {
+    // Obtain shared preferences.
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      // Save an double value to 'decimal' key.
+      todo = (prefs.getStringList('todoList') ?? []).toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadLocalData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("ToDo App"),
-        actions: [
-          InkWell(
-            onTap: createTodo,
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.add,
-                size: 30,
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {},
-            borderRadius: BorderRadius.circular(16),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              child: Icon(
-                Icons.more_vert,
-                size: 30,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Container(
-        padding: EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: todo.length,
-          itemBuilder: (context, index) {
-            return Card(
-              child: ListTile(
-                contentPadding: EdgeInsets.all(10),
-                title: Text(
-                  todo[index],
-                  style: TextStyle(fontSize: 18),
-                ),
-                trailing: Icon(Icons.edit),
-              ),
-            );
-          },
+        appBar: MyAppBar(
+          createTodo: createTodo,
         ),
-      ),
-    );
+        body: Body(
+          todo: todo,
+          updateLocalData: updateLocalData,
+        ));
   }
 }
