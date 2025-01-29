@@ -135,12 +135,19 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: MyAppBar(
-          createTodo: createTodo,
-        ),
-        body: Body(
-          todo: todo,
-          updateLocalData: updateLocalData,
-        ));
+      appBar: MyAppBar(
+        createTodo: createTodo,
+      ),
+      body: Body(
+        todo: todo,
+        updateLocalData: updateLocalData,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: createTodo,
+        backgroundColor: Colors.orangeAccent,
+        foregroundColor: Colors.black,
+        child: Icon(Icons.add),
+      ),
+    );
   }
 }
